@@ -1,0 +1,24 @@
+---
+# We need to make some things before we actually install kube utils
+- hosts: all
+  remote_user: pi
+  become: yes
+
+  tasks:
+     - name: Disable Swapping
+       systemd:
+         name: dphys-swapfile
+         enabled: no
+         state: stopped
+       notify:
+         - restart node
+
+     - name: Enable memory and cpuset cgroup
+       shell: sed -i '1 s/$/ cgroup_enable=cpuset cgroup_enable=memory/' /boot/cmdline.txt
+       notify:
+         - restart node
+
+  handlers:
+    - name: restart node
+      become: yes
+      shell: shutdown -r now

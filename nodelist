@@ -1,7 +1,0 @@
-pikubator:
-  hosts:
-    node01.fritz.box:
-    node02.fritz.box:
-    node03.fritz.box:
-    node04.fritz.box:
-    node05.fritz.box:

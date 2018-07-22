@@ -1,0 +1,32 @@
+---
+- hosts: master
+  become: yes
+  remote_user: pi
+
+  tasks:
+    - name: Get flannel spec
+      get_url:
+        url: https://raw.githubusercontent.com/coreos/flannel/v0.10.0/Documentation/kube-flannel.yml
+        dest: ~/kube-flannel.yml
+        mode: 0644
+        backup: yes
+    - name: Patch flannel spec to match arm platform
+      replace:
+        path: ~/kube-flannel.yml
+        regexp: 'amd64'
+        replace: "arm"
+    - name: Initialize Master
+      shell: kubeadm init --pod-network-cidr=10.244.0.0/16 --token=abcdef.1234567890123456
+    - name: Create .kube folder in home
+      file:
+        path: ~/.kube/
+        state: directory
+    - name: Copy config to home folder
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: ~/.kube/config
+        owner: pi
+        group: pi
+        mode: 0600
+    - name: Install Network Addon
+      shell: kubectl -f kube-flannel.yml

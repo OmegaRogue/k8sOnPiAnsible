@@ -1,0 +1,12 @@
+all:
+  children:
+    pikubator:
+      hosts:
+        node02.fritz.box:
+        node03.fritz.box:
+        node04.fritz.box:
+        node05.fritz.box:
+    master:
+      hosts:
+        node01.fritz.box:    
+    
