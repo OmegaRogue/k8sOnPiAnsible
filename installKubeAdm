@@ -1,0 +1,50 @@
+---
+
+# Ansible playbook to install kubeadm on nodes.
+# written by Alexander Truemper
+# see LICENSE and/or readme.md for more information
+# and copyright
+
+- hosts: pikubator
+  remote_user: pi
+  become: yes
+  tasks:
+    - name: Update System
+      apt:
+        upgrade: dist
+    - name: Remove old docker versions
+      apt:
+        name: "{{ packages }}"
+        state: absent
+      vars:
+        packages:
+        - docker
+        - docker-engine
+        - docker.io
+
+    - name: Install docker prerequisites
+      apt:
+        name: "{{ packages }}"
+        state: present
+      vars:
+        packages:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - software-properties-common
+        - gnupg2
+
+        
+    - name: Add Docker Repo Key
+      # Make sure, the repo key matcher your distro
+      apt_key:
+        url: https://download.docker.com/linux/debian/gpg
+        state: present
+      
+    - name: Add Docker Repo
+      # Make sure, the repo matches your distro version
+      apt_repository:
+        repo: deb https://download.docker.com/linux/debian stretch stable
+        state: present
+        update_cache: yes
+    
